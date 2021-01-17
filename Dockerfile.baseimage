@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM phusion/baseimage:master
 
 ENV HOME=/root \
     DEBIAN_FRONTEND=noninteractive \
@@ -7,14 +7,10 @@ ENV HOME=/root \
     DISPLAY_HEIGHT=768 \
     HOMEPAGE=/usr/share/novnc
 
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" \
-    >> /etc/apk/repositories && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community/" \
-    >> /etc/apk/repositories && \
-    # Deps
-    apk update && \
-    apk --no-cache upgrade && \
-    apk --no-cache add \
+RUN echo "Asia/shanghai" > /etc/timezone && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime && \
+    apt-get update && \
+    apt-get install -y \
         bash \
         xterm \
         fluxbox \
@@ -22,7 +18,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" \
         xvfb \
         x11vnc \
         novnc && \
-    ln -s /usr/share/novnc/vnc_auto.html /usr/share/novnc/index.html && \
     echo \
         "\
         [supervisord]                                                                       \
@@ -45,4 +40,4 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing/" \
         command=fluxbox                                                                     \
         autorestart=true" | sed 's/   */\n/g' > "/etc/supervisord.conf"
 
-ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"] 
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
