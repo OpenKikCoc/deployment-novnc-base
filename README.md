@@ -41,6 +41,3 @@ Docker deployment for noVNC-base.
     Visit: http://localhost:10000
     
 
-## 1. For multi-architecture docker images
-
-More details at `workspace-docker.sh` .
