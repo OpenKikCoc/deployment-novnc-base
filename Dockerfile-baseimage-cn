@@ -1,0 +1,45 @@
+FROM phusion/baseimage:master
+
+ENV HOME=/root \
+    DEBIAN_FRONTEND=noninteractive \
+    DISPLAY=:0.0 \
+    DISPLAY_WIDTH=1024 \
+    DISPLAY_HEIGHT=768 \
+    HOMEPAGE=/usr/share/novnc \
+    LC_ALL=zh_CN.UTF-8
+
+RUN echo "Asia/shanghai" > /etc/timezone && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime && \
+    apt-get update && \
+    apt-get install -y \
+        bash \
+        xterm \
+        fluxbox \
+        supervisor \
+        xvfb \
+        x11vnc \
+        novnc && \
+    apt-get install -y ttf-wqy-microhei && \
+    echo \
+        "\
+        [supervisord]                                                                       \
+        nodaemon=true                                                                       \
+        logfile=/var/log/supervisord.log                                                    \
+                                                                                            \
+        [program:X11]                                                                       \
+        command=Xvfb :0 -screen 0 \"%(ENV_DISPLAY_WIDTH)s\"x\"%(ENV_DISPLAY_HEIGHT)s\"x24   \
+        autorestart=true                                                                    \
+                                                                                            \
+        [program:x11vnc]                                                                    \
+        command=/usr/bin/x11vnc                                                             \
+        autorestart=true                                                                    \
+                                                                                            \
+        [program:websockify]                                                                \
+        command=websockify --web=\"%(ENV_HOMEPAGE)s\" 10000 localhost:5900                  \
+        autorestart=true                                                                    \
+                                                                                            \
+        [program:fluxbox]                                                                   \
+        command=fluxbox                                                                     \
+        autorestart=true" | sed 's/   */\n/g' > "/etc/supervisord.conf"
+
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]

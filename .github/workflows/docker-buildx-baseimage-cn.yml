@@ -1,4 +1,4 @@
-name: Docker BaseImage
+name: Docker BaseImage CN
 
 on:
   push:
@@ -31,8 +31,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2.2.2
         with:
-          file: ./Dockerfile-baseimage
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/novnc-base:baseimage
+          file: ./Dockerfile-baseimage-cn
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/novnc-base:baseimage-cn
           no-cache: true
           platforms: linux/386,linux/amd64,linux/arm64
           push: true
